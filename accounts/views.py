@@ -3,6 +3,8 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import Group
+
+from accounts.models import UserProfile
 from .forms import RegisterForm, ProfileForm
 
 
@@ -92,7 +94,7 @@ def profile_view(request):
 @login_required
 def dashboard_view(request):
     user = request.user
-    profile = user.profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
     context = {'profile': profile}
 
     if profile.is_owner():
