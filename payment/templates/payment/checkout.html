@@ -1,0 +1,181 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payment/css/payment.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}Checkout — {{ booking.space.title }}{% else %}الدفع — {{ booking.space.title }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="checkout-page">
+
+  <!-- Header -->
+  <h3>
+    <i class="fas fa-credit-card"></i>
+    {% if request.session.lang == 'en' %}Checkout{% else %}إتمام الدفع{% endif %}
+    <span style="font-weight:400;font-size:1rem;color:var(--muted);">
+      / {{ booking.space.title }}
+    </span>
+  </h3>
+
+  <div class="row g-4">
+
+    <!-- ── Payment Methods ── -->
+    <div class="col-md-7">
+      <div class="checkout-box">
+        <h5>
+          <i class="fas fa-wallet" style="color:var(--gold);margin-left:.5rem;"></i>
+          {% if request.session.lang == 'en' %}Payment Method{% else %}طريقة الدفع{% endif %}
+        </h5>
+
+        <form method="post" id="payForm">
+          {% csrf_token %}
+
+          <!-- mada -->
+          <label class="pay-method selected" id="lbl_mada">
+            <input type="radio" name="method" value="mada" class="d-none pay-radio" checked>
+            <div class="pay-method-logo" style="background:linear-gradient(135deg,#005000,#007000);">
+              <span style="color:#fff;font-weight:800;font-size:.8rem;">mada</span>
+            </div>
+            <div class="pay-method-info">
+              <strong>مدى</strong>
+              <small>{% if request.session.lang == 'en' %}Saudi Debit Card{% else %}البطاقة المصرفية السعودية{% endif %}</small>
+            </div>
+          </label>
+
+          <!-- Apple Pay -->
+          <label class="pay-method" id="lbl_apple_pay">
+            <input type="radio" name="method" value="apple_pay" class="d-none pay-radio">
+            <div class="pay-method-logo" style="background:#000;">
+              <i class="fab fa-apple" style="color:#fff;font-size:1.2rem;"></i>
+            </div>
+            <div class="pay-method-info">
+              <strong>Apple Pay</strong>
+              <small>{% if request.session.lang == 'en' %}Quick & secure{% else %}سريع وآمن{% endif %}</small>
+            </div>
+          </label>
+
+          <!-- Credit Card -->
+          <label class="pay-method" id="lbl_credit">
+            <input type="radio" name="method" value="credit" class="d-none pay-radio">
+            <div class="pay-method-logo" style="background:linear-gradient(135deg,#1565C0,#283593);">
+              <i class="fas fa-credit-card" style="color:#fff;font-size:1rem;"></i>
+            </div>
+            <div class="pay-method-info">
+              <strong>{% if request.session.lang == 'en' %}Credit Card{% else %}بطاقة ائتمان{% endif %}</strong>
+              <small>Visa / Mastercard</small>
+            </div>
+          </label>
+
+          <!-- Card Fields -->
+          <div id="cardFields" class="card-fields d-none mt-3">
+            <div class="mb-3">
+              <label class="field-lbl">{% if request.session.lang == 'en' %}Card Number{% else %}رقم البطاقة{% endif %}</label>
+              <input type="text" placeholder="4111 1111 1111 1111" maxlength="19">
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="field-lbl">{% if request.session.lang == 'en' %}Expiry{% else %}تاريخ الانتهاء{% endif %}</label>
+                <input type="text" placeholder="MM/YY" maxlength="5">
+              </div>
+              <div class="col-6">
+                <label class="field-lbl">CVV</label>
+                <input type="text" placeholder="123" maxlength="3">
+              </div>
+            </div>
+          </div>
+
+          <!-- Pay Button -->
+          <button type="submit" class="pay-btn">
+            <i class="fas fa-lock" style="margin-left:.5rem;"></i>
+            {% if request.session.lang == 'en' %}Pay{% else %}ادفع{% endif %}
+            {{ booking.total_price }}
+            {% if request.session.lang == 'en' %}SAR{% else %}ريال{% endif %}
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ── Order Summary ── -->
+    <div class="col-md-5">
+      <div class="summary-box">
+        <h5>
+          <i class="fas fa-receipt" style="color:var(--gold);margin-left:.5rem;"></i>
+          {% if request.session.lang == 'en' %}Booking Summary{% else %}ملخص الحجز{% endif %}
+        </h5>
+
+        {% if booking.space.main_image %}
+        <img src="{{ booking.space.main_image.url }}" class="summary-img" alt="{{ booking.space.title }}">
+        {% endif %}
+
+        <table class="summary-table">
+          <tr>
+            <td>{% if request.session.lang == 'en' %}Space{% else %}المساحة{% endif %}</td>
+            <td>{{ booking.space.title }}</td>
+          </tr>
+          <tr>
+            <td>{% if request.session.lang == 'en' %}City{% else %}المدينة{% endif %}</td>
+            <td>{{ booking.space.get_city_display }}</td>
+          </tr>
+          <tr>
+            <td>{% if request.session.lang == 'en' %}From{% else %}من{% endif %}</td>
+            <td>{{ booking.date_from }}</td>
+          </tr>
+          <tr>
+            <td>{% if request.session.lang == 'en' %}To{% else %}إلى{% endif %}</td>
+            <td>{{ booking.date_to }}</td>
+          </tr>
+          <tr>
+            <td>{% if request.session.lang == 'en' %}Duration{% else %}المدة{% endif %}</td>
+            <td>
+              {{ booking.duration_days }}
+              {% if request.session.lang == 'en' %}day(s){% else %}يوم{% endif %}
+            </td>
+          </tr>
+        </table>
+
+        <hr class="summary-divider">
+
+        <div class="summary-total">
+          <span>{% if request.session.lang == 'en' %}Total{% else %}الإجمالي{% endif %}</span>
+          <span class="summary-total-price">
+            {{ booking.total_price }}
+            {% if request.session.lang == 'en' %}SAR{% else %}ريال{% endif %}
+          </span>
+        </div>
+      </div>
+
+      <!-- Secure badge -->
+      <div class="secure-badge">
+        <i class="fas fa-shield-alt"></i>
+        {% if request.session.lang == 'en' %}Your payment is secured and encrypted.{% else %}دفعتك آمنة ومشفّرة بالكامل.{% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const radios = document.querySelectorAll('.pay-radio');
+const lblMap = {
+  mada:      document.getElementById('lbl_mada'),
+  apple_pay: document.getElementById('lbl_apple_pay'),
+  credit:    document.getElementById('lbl_credit'),
+};
+const cardFields = document.getElementById('cardFields');
+
+radios.forEach(r => {
+  r.addEventListener('change', () => {
+    Object.values(lblMap).forEach(l => l.classList.remove('selected'));
+    if (lblMap[r.value]) lblMap[r.value].classList.add('selected');
+    cardFields.classList.toggle('d-none', r.value !== 'credit');
+  });
+});
+</script>
+{% endblock %}

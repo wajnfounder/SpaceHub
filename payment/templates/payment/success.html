@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payment/css/payment_success.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}Payment Successful{% else %}تم الدفع بنجاح{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="success-page">
+  <div class="success-wrap">
+
+    <!-- Icon -->
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
+    </div>
+
+    <!-- Title -->
+    <h2>
+      {% if request.session.lang == 'en' %}Payment Successful! 🎉{% else %}تم الدفع بنجاح! 🎉{% endif %}
+    </h2>
+    <p>
+      {% if request.session.lang == 'en' %}
+        Thank you for your booking. Your reservation is now confirmed.
+      {% else %}
+        شكراً لك! تم تأكيد حجزك وستُرسل إليك تفاصيله.
+      {% endif %}
+    </p>
+
+    <!-- Summary -->
+    <div class="success-summary">
+      <div class="success-summary-title">
+        {% if request.session.lang == 'en' %}Booking Details{% else %}تفاصيل الحجز{% endif %}
+      </div>
+      <div class="success-grid">
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}Reference{% else %}رقم العملية{% endif %}</small>
+          <strong><span class="success-ref">{{ payment.reference }}</span></strong>
+        </div>
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}Payment Method{% else %}طريقة الدفع{% endif %}</small>
+          <strong>{{ payment.get_method_display }}</strong>
+        </div>
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}Space{% else %}المساحة{% endif %}</small>
+          <strong>{{ booking.space.title }}</strong>
+        </div>
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}Amount Paid{% else %}المبلغ المدفوع{% endif %}</small>
+          <strong class="amount">{{ payment.amount }} {% if request.session.lang == 'en' %}SAR{% else %}ريال{% endif %}</strong>
+        </div>
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}From{% else %}من{% endif %}</small>
+          <strong>{{ booking.date_from }}</strong>
+        </div>
+
+        <div class="success-item">
+          <small>{% if request.session.lang == 'en' %}To{% else %}إلى{% endif %}</small>
+          <strong>{{ booking.date_to }}</strong>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="success-actions">
+      <a href="{% url 'bookings:my_bookings' %}" class="btn-bookings">
+        <i class="fas fa-list"></i>
+        {% if request.session.lang == 'en' %}My Bookings{% else %}حجوزاتي{% endif %}
+      </a>
+      <a href="{% url 'spaces:list' %}" class="btn-home">
+        <i class="fas fa-search"></i>
+        {% if request.session.lang == 'en' %}Browse Spaces{% else %}تصفح المساحات{% endif %}
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
