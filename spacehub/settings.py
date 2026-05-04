@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'spacehub.urls'
+ROOT_URLCONF = 'SpaceHub.urls'
 
 TEMPLATES = [
     {
@@ -66,7 +66,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'spacehub.wsgi.application'
+WSGI_APPLICATION = 'SpaceHub.wsgi.application'
 
 
 # Database
