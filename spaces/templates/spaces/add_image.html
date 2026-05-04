@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% load static %}                
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'spaces/css/spaces.css' %}">
+
+{% endblock %} 
+{% block title %}إضافة صورة{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm rounded-4 p-4">
+            <h4 class="fw-bold mb-3"><i class="fas fa-image me-2"></i>إضافة صورة لـ {{ space.title }}</h4>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark px-4">رفع الصورة</button>
+                    <a href="{% url 'spaces:detail' space.pk %}" class="btn btn-outline-secondary px-4">إلغاء</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('input[type=file]').forEach(el => el.classList.add('form-control'));
+</script>
+{% endblock %}

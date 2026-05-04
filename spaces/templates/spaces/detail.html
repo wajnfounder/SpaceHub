@@ -1,0 +1,422 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'spaces/css/spaces.css' %}">
+{% endblock %} 
+
+{% block title %}{{ space.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- ── Images ───────────────────────────── -->
+    <div class="col-lg-7">
+        {% with images=space.images.all %}
+        {% if images %}
+        <div id="spaceCarousel" class="carousel slide rounded-4 overflow-hidden shadow" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                {% for img in images %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ img.image.url }}" class="d-block w-100" style="height:380px;object-fit:cover;" alt="صورة">
+                </div>
+                {% endfor %}
+            </div>
+            {% if images|length > 1 %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#spaceCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#spaceCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+            <div class="carousel-indicators">
+                {% for img in images %}
+                <button type="button" data-bs-target="#spaceCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+                        {% if forloop.first %}class="active"{% endif %}></button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <img src="https://placehold.co/700x380?text=SpaceHub" class="img-fluid rounded-4 shadow w-100" alt="">
+        {% endif %}
+        {% endwith %}
+
+        <!-- Video embed -->
+        {% if space.video_url %}
+<div class="mt-3 detail-section">
+    <h5><i class="fas fa-play-circle me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Video Tour{% else %}جولة فيديو{% endif %}
+    </h5>
+    <div class="ratio ratio-16x9 rounded-3 overflow-hidden">
+        <a href="{{ space.video_url }}" target="_blank" class="btn btn-outline-secondary">
+            <i class="fas fa-external-link-alt me-1"></i>
+            {% if request.session.lang == 'en' %}Watch Video{% else %}شاهد الفيديو{% endif %}
+        </a>
+    </div>
+</div>
+{% endif %}
+
+        <!-- Virtual Tour -->
+        {% if space.virtual_tour %}
+        <div class="mt-3">
+            <a href="{{ space.virtual_tour }}" target="_blank" class="btn btn-outline-primary w-100">
+                <i class="fas fa-vr-cardboard me-2"></i>
+                {% if request.session.lang == 'en' %}Virtual Tour 360°{% else %}جولة افتراضية 360°{% endif %}
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Owner add image button -->
+        {% if user.is_authenticated and space.owner == user %}
+        <a href="{% url 'spaces:add_image' space.pk %}" class="btn btn-outline-secondary btn-sm mt-2">
+            <i class="fas fa-image me-1"></i>
+            {% if request.session.lang == 'en' %}Add Photos{% else %}إضافة صور{% endif %}
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- ── Info Panel ─────────────────────────── -->
+    <div class="col-lg-5">
+        <div class="booking-cta">
+            <div class="d-flex gap-2 mb-2 flex-wrap">
+                <span class="badge bg-primary">{{ space.get_space_type_display }}</span>
+                <span class="badge bg-secondary">{{ space.get_city_display }}</span>
+                <span class="badge bg-{% if space.status == 'available' %}success{% else %}danger{% endif %}">
+                    {{ space.get_status_display }}
+                </span>
+            </div>
+            <h3 class="fw-bold text-white">{{ space.title }}</h3>
+            <p style="color:rgba(255,255,255,.75);">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ space.address }}
+            </p>
+
+            <!-- Rating -->
+            <div class="d-flex align-items-center mb-3">
+                <span class="text-warning me-1"><i class="fas fa-star"></i></span>
+                <span class="fw-bold text-white">{{ avg_rating|floatformat:1 }}</span>
+                <span style="color:rgba(255,255,255,.6);" class="ms-2 small">({{ space.reviews.count }} تقييم)</span>
+
+                <!-- Favorite -->
+                {% if user.is_authenticated and space.owner != user %}
+                <form method="post" action="{% url 'favorites:toggle' space.pk %}" class="ms-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm {% if is_favorite %}btn-danger{% else %}btn-outline-light{% endif %}">
+                        <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart me-1"></i>
+                        {% if is_favorite %}
+                            {% if request.session.lang == 'en' %}Saved{% else %}محفوظة{% endif %}
+                        {% else %}
+                            {% if request.session.lang == 'en' %}Save{% else %}احفظ{% endif %}
+                        {% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Specs -->
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <div class="text-center p-2 rounded-3" style="background:rgba(255,255,255,.1);">
+                        <small style="color:rgba(255,255,255,.6);">
+                            {% if request.session.lang == 'en' %}Capacity{% else %}السعة{% endif %}
+                        </small>
+                        <div class="fw-bold text-white">{{ space.capacity }}
+                            {% if request.session.lang == 'en' %}persons{% else %}شخص{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="text-center p-2 rounded-3" style="background:rgba(255,255,255,.1);">
+                        <small style="color:rgba(255,255,255,.6);">
+                            {% if request.session.lang == 'en' %}Area{% else %}المساحة{% endif %}
+                        </small>
+                        <div class="fw-bold text-white">{{ space.area_sqm }} م²</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-3">
+                {% if space.allow_dynamic_pricing and space.discount_pct %}
+                <span class="badge bg-danger mb-1">خصم {{ space.discount_pct }}%</span><br>
+                <del class="text-muted small">{{ space.price_per_day }} ريال</del>
+                <span class="price" style="display:block;">{{ space.effective_price|floatformat:2 }} <small style="font-size:.65rem;color:rgba(255,255,255,.6);">ريال/يوم</small></span>
+                {% else %}
+                <span class="price">{{ space.price_per_day }} <small style="font-size:.65rem;color:rgba(255,255,255,.6);">ريال/يوم</small></span>
+                {% endif %}
+                {% if space.price_monthly %}
+                <div class="small mt-1" style="color:rgba(255,255,255,.6);">
+                    <i class="fas fa-calendar me-1"></i>{{ space.price_monthly }} ريال/شهر
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Action buttons -->
+            {% if user.is_authenticated %}
+                {% if space.owner == user %}
+                    <a href="{% url 'spaces:edit' space.pk %}" class="btn btn-outline-light w-100 mb-2">
+                        <i class="fas fa-edit me-1"></i>
+                        {% if request.session.lang == 'en' %}Edit Space{% else %}تعديل المساحة{% endif %}
+                    </a>
+                    <a href="{% url 'spaces:delete' space.pk %}" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-trash me-1"></i>
+                        {% if request.session.lang == 'en' %}Delete{% else %}حذف{% endif %}
+                    </a>
+                {% elif space.status == 'available' %}
+                    <a href="{% url 'bookings:create' space.pk %}" class="btn-book btn">
+                        <i class="fas fa-calendar-plus me-2"></i>
+                        {% if request.session.lang == 'en' %}Book Now{% else %}احجز الآن{% endif %}
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary w-100" disabled>
+                        {% if request.session.lang == 'en' %}Not Available{% else %}غير متاحة للحجز{% endif %}
+                    </button>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn-book btn">
+                    {% if request.session.lang == 'en' %}Login to Book{% else %}سجّل دخولك للحجز{% endif %}
+                </a>
+            {% endif %}
+
+            <p class="mt-3 mb-0 small" style="color:rgba(255,255,255,.5);">
+                {% if request.session.lang == 'en' %}Owner:{% else %}المالك:{% endif %}
+                <strong style="color:rgba(255,255,255,.8);">{{ space.owner.get_full_name|default:space.owner.username }}</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ── Description ────────────────────────────────────────────── -->
+<div class="detail-section mt-4">
+    <h5><i class="fas fa-info-circle me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Description{% else %}الوصف{% endif %}
+    </h5>
+    <p class="mb-0">{{ space.description }}</p>
+</div>
+
+<!-- ── Amenities ──────────────────────────────────────────────── -->
+{% if space.amenities.exists %}
+<div class="detail-section">
+    <h5><i class="fas fa-star me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Amenities & Features{% else %}المميزات والمرافق{% endif %}
+    </h5>
+    <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 g-2">
+        {% for amenity in space.amenities.all %}
+        <div class="col">
+            <div class="amenity-item">
+                <i class="{{ amenity.icon }}"></i>
+                <span>{{ amenity.get_name_display }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- ── Additional Services (large venues) ─────────────────────── -->
+{% if space.is_large_venue and space.additional_services.exists %}
+<div class="detail-section">
+    <h5><i class="fas fa-concierge-bell me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Additional Services{% else %}الخدمات الإضافية{% endif %}
+        <small class="text-muted fs-6 fw-normal">
+            ({% if request.session.lang == 'en' %}optional add-ons{% else %}خدمات اختيارية عند الحجز{% endif %})
+        </small>
+    </h5>
+    <div class="row g-3">
+        {% for svc in space.additional_services.all %}
+        <div class="col-md-6 col-lg-4">
+            <div class="service-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>{{ svc.get_service_type_display }}</strong>
+                    <span class="text-success fw-bold">{{ svc.price }} ريال</span>
+                </div>
+                {% if svc.description %}
+                <small class="text-muted">{{ svc.description }}</small>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- ── Google Maps ─────────────────────────────────────────────── -->
+{% if space.maps_embed_url %}
+<div class="detail-section">
+    <h5><i class="fas fa-map-marked-alt me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Location{% else %}الموقع على الخريطة{% endif %}
+    </h5>
+    <div class="map-container">
+        <iframe src="{{ space.maps_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <p class="mt-2 mb-0 text-muted small"><i class="fas fa-map-marker-alt me-1"></i>{{ space.address }}</p>
+</div>
+{% else %}
+<div class="detail-section">
+    <h5><i class="fas fa-map-marked-alt me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Location{% else %}الموقع{% endif %}
+    </h5>
+    <p class="mb-0 text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ space.address }} — {{ space.get_city_display }}</p>
+</div>
+{% endif %}
+
+<!-- ── Reviews ─────────────────────────────────────────────────── -->
+<div class="detail-section mt-2">
+    <h5><i class="fas fa-star me-2 text-warning"></i>
+        {% if request.session.lang == 'en' %}Reviews{% else %}التقييمات{% endif %}
+        <span class="badge bg-warning text-dark ms-2">{{ avg_rating|floatformat:1 }} / 5</span>
+    </h5>
+
+    <!-- Add review form -->
+    {% if user.is_authenticated and not user_review and space.owner != user %}
+    <div class="card border-0 bg-light rounded-3 p-3 mb-4">
+        <h6 class="fw-bold mb-3">
+            {% if request.session.lang == 'en' %}Add Your Review{% else %}أضف تقييمك{% endif %}
+        </h6>
+        <form method="post" action="{% url 'reviews:add' space.pk %}">
+            {% csrf_token %}
+            <!-- Overall star rating -->
+            <div class="mb-3">
+                <label class="form-label fw-bold small">
+                    {% if request.session.lang == 'en' %}Overall Rating{% else %}التقييم العام{% endif %}
+                </label>
+                <div class="d-flex gap-1 flex-row-reverse justify-content-end">
+                    {% for i in "54321" %}
+                    <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" class="star-radio" required>
+                    <label for="star{{ i }}" class="star-label"><i class="fas fa-star"></i></label>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Comment -->
+            <div class="mb-3">
+                <label class="form-label fw-bold small">
+                    {% if request.session.lang == 'en' %}Your Comment{% else %}تعليقك{% endif %}
+                </label>
+                <textarea name="comment" class="form-control" rows="3" required></textarea>
+            </div>
+            <!-- Multi-criteria -->
+            <div class="mb-3">
+                <label class="form-label fw-bold small">
+                    {% if request.session.lang == 'en' %}Detailed Ratings (optional){% else %}تقييم تفصيلي (اختياري){% endif %}
+                </label>
+                <div class="row g-2">
+                    {% for field_name, label in criteria_labels %}
+                    <div class="col-6 col-md-4">
+                        <label class="form-label small text-muted">{{ label }}</label>
+                        <select name="{{ field_name }}" class="form-select form-select-sm">
+                            <option value="">—</option>
+                            {% for i in "12345" %}
+                            <option value="{{ i }}">{{ i }} ★</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-warning fw-bold btn-sm px-4">
+                <i class="fas fa-paper-plane me-1"></i>
+                {% if request.session.lang == 'en' %}Submit Review{% else %}إرسال التقييم{% endif %}
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Review list -->
+    {% for review in space.reviews.all %}
+    <div class="card border-0 shadow-sm rounded-3 p-3 mb-3">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <strong>{{ review.user.username }}</strong>
+                <span class="text-warning ms-2">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <i class="fas fa-star" style="font-size:.85rem;"></i>
+                        {% else %}
+                            <i class="far fa-star" style="font-size:.85rem;"></i>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                <small class="text-muted ms-2">{{ review.created_at|date:"Y/m/d" }}</small>
+            </div>
+            {% if user == review.user %}
+            <form method="post" action="{% url 'reviews:delete' review.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                    {% if request.session.lang == 'en' %}Delete{% else %}حذف{% endif %}
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        <p class="mb-2 mt-2">{{ review.comment }}</p>
+
+        <!-- Multi-criteria mini bars -->
+        {% if review.cleanliness or review.internet or review.parking_rate or review.quietness or review.host_service %}
+        <div class="border-top pt-2 mt-1">
+            <div class="row g-1" style="font-size:.78rem;">
+                {% if review.cleanliness %}
+                <div class="col-6 col-md-4 criteria-row">
+                    <span class="label">{% if request.session.lang == 'en' %}Cleanliness{% else %}النظافة{% endif %}</span>
+                    <span class="criteria-stars">
+                        {% for i in "12345" %}{% if forloop.counter <= review.cleanliness %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if review.internet %}
+                <div class="col-6 col-md-4 criteria-row">
+                    <span class="label">{% if request.session.lang == 'en' %}Internet{% else %}الإنترنت{% endif %}</span>
+                    <span class="criteria-stars">
+                        {% for i in "12345" %}{% if forloop.counter <= review.internet %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if review.parking_rate %}
+                <div class="col-6 col-md-4 criteria-row">
+                    <span class="label">{% if request.session.lang == 'en' %}Parking{% else %}المواقف{% endif %}</span>
+                    <span class="criteria-stars">
+                        {% for i in "12345" %}{% if forloop.counter <= review.parking_rate %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if review.quietness %}
+                <div class="col-6 col-md-4 criteria-row">
+                    <span class="label">{% if request.session.lang == 'en' %}Quietness{% else %}الهدوء{% endif %}</span>
+                    <span class="criteria-stars">
+                        {% for i in "12345" %}{% if forloop.counter <= review.quietness %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+                {% if review.host_service %}
+                <div class="col-6 col-md-4 criteria-row">
+                    <span class="label">{% if request.session.lang == 'en' %}Host Service{% else %}خدمة المالك{% endif %}</span>
+                    <span class="criteria-stars">
+                        {% for i in "12345" %}{% if forloop.counter <= review.host_service %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}{% endfor %}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p class="text-muted">
+        {% if request.session.lang == 'en' %}No reviews yet. Be the first!{% else %}لا يوجد تقييمات بعد. كن أول من يقيّم!{% endif %}
+    </p>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Star rating interactive
+document.querySelectorAll('.star-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const val = parseInt(this.value);
+        document.querySelectorAll('.star-label').forEach((lbl, idx) => {
+            const starVal = 5 - idx;
+            lbl.style.color = starVal <= val ? '#FFC107' : '#ccc';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'spaces/css/spaces.css' %}">
+{% endblock %} 
+
+{% block title %}{% if request.session.lang == 'en' %}Browse Spaces{% else %}استعرض المساحات{% endif %}{% endblock %}
+
+{% block content %}
+
+<!-- Hero search section -->
+<div class="hero-search mb-4">
+    <h1 class="mb-1">
+        <i class="fas fa-building me-2"></i>
+        {% if request.session.lang == 'en' %}Find Your Perfect Space{% else %}اعثر على مساحتك المثالية{% endif %}
+    </h1>
+    <p class="mb-3">
+        {% if request.session.lang == 'en' %}
+        Offices, halls, studios & more across 5 Saudi cities
+        {% else %}
+        مكاتب، قاعات، استوديوهات والمزيد في 5 مدن سعودية
+        {% endif %}
+    </p>
+
+    <!-- Main 4-box search -->
+    <form method="get" class="search-box">
+        <div class="row g-2 align-items-end">
+            <!-- Box 1: Space type -->
+            <div class="col-6 col-md-3">
+                <label class="form-label">
+                    <i class="fas fa-th-large me-1"></i>
+                    {% if request.session.lang == 'en' %}Space Type{% else %}نوع المساحة{% endif %}
+                </label>
+                <select name="type" class="form-select">
+                    <option value="">{% if request.session.lang == 'en' %}All Types{% else %}الكل{% endif %}</option>
+                    {% for value, label in space_types %}
+                        <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Box 2: Capacity -->
+            <div class="col-6 col-md-2">
+                <label class="form-label">
+                    <i class="fas fa-users me-1"></i>
+                    {% if request.session.lang == 'en' %}Min Capacity{% else %}السعة (أشخاص){% endif %}
+                </label>
+                <input type="number" name="min_cap" class="form-control" placeholder="1" min="1" value="{{ min_cap }}">
+            </div>
+            <!-- Box 3: Price range -->
+            <div class="col-6 col-md-3">
+                <label class="form-label">
+                    <i class="fas fa-tag me-1"></i>
+                    {% if request.session.lang == 'en' %}Price (SAR/day){% else %}السعر (ريال/يوم){% endif %}
+                </label>
+                <div class="input-group">
+                    <input type="number" name="min_price" class="form-control" placeholder="1000" value="{{ min_price }}" min="0">
+                    <span class="input-group-text">-</span>
+                    <input type="number" name="max_price" class="form-control" placeholder="20000" value="{{ max_price }}" min="0">
+                </div>
+            </div>
+            <!-- Box 4: Rental duration -->
+            <div class="col-6 col-md-2">
+                <label class="form-label">
+                    <i class="fas fa-clock me-1"></i>
+                    {% if request.session.lang == 'en' %}Rental Period{% else %}مدة الإيجار{% endif %}
+                </label>
+                <select name="rental" class="form-select">
+                    <option value="">{% if request.session.lang == 'en' %}Any{% else %}الكل{% endif %}</option>
+                    {% for value, label in rental_types %}
+                        <option value="{{ value }}" {% if selected_rental == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- City filter -->
+            <div class="col-6 col-md-2">
+                <label class="form-label">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    {% if request.session.lang == 'en' %}City{% else %}المدينة{% endif %}
+                </label>
+                <select name="city" class="form-select">
+                    <option value="">{% if request.session.lang == 'en' %}All Cities{% else %}الكل{% endif %}</option>
+                    {% for value, label in cities %}
+                        <option value="{{ value }}" {% if selected_city == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Search button -->
+            <div class="col-12 col-md-12 d-flex gap-2 mt-2">
+                <input type="text" name="q" class="form-control" placeholder="{% if request.session.lang == 'en' %}Search by name, address...{% else %}بحث بالاسم أو العنوان...{% endif %}" value="{{ query }}">
+                <button type="submit" class="btn-search btn">
+                    <i class="fas fa-search me-1"></i>
+                    {% if request.session.lang == 'en' %}Search{% else %}بحث{% endif %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Smart Match AI bar -->
+<div class="smart-bar mb-4">
+    <form method="get">
+        <div class="d-flex gap-2 align-items-center">
+            <i class="fas fa-robot text-warning fs-5"></i>
+            <div class="flex-grow-1">
+                <input type="text" name="smart" class="form-control form-control-sm"
+                       placeholder="{% if request.session.lang == 'en' %}Smart Match: Describe what you need... (e.g. quiet studio in Riyadh for 5 people){% else %}Smart Match: اكتب احتياجك... (مثلاً: أريد قاعة هادئة في الرياض لـ 50 شخص){% endif %}"
+                       value="{{ smart }}">
+            </div>
+            <button type="submit" class="btn btn-sm">
+                <i class="fas fa-magic me-1"></i>
+                {% if request.session.lang == 'en' %}Match{% else %}ابحث ذكياً{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Smart Match results -->
+{% if smart_results %}
+<div class="mb-4">
+    <h5 class="fw-bold text-warning"><i class="fas fa-robot me-2"></i>
+        {% if request.session.lang == 'en' %}Smart Match Results{% else %}نتائج الذكاء الاصطناعي{% endif %}
+    </h5>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        {% for space in smart_results %}
+        <div class="col">
+            <div class="card smart-card h-100">
+                {% if space.main_image %}
+                    <img src="{{ space.main_image.url }}" class="card-img-top" style="height:160px;object-fit:cover;" alt="{{ space.title }}">
+                {% else %}
+                    <img src="https://placehold.co/400x160?text=SpaceHub" class="card-img-top" style="height:160px;object-fit:cover;" alt="">
+                {% endif %}
+                <div class="card-body">
+                    <span class="badge bg-warning text-dark mb-1">{{ space.get_space_type_display }}</span>
+                    <h6 class="fw-bold">{{ space.title }}</h6>
+                    <small class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ space.get_city_display }}</small>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <span class="price-tag">{{ space.price_per_day }} <small>ريال/يوم</small></span>
+                        <a href="{% url 'spaces:detail' space.pk %}" class="btn btn-sm btn-warning text-dark fw-bold">
+                            {% if request.session.lang == 'en' %}View{% else %}عرض{% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+</div>
+{% endif %}
+
+<!-- Results count -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted small mb-0">
+        {{ page_obj.paginator.count }}
+        {% if request.session.lang == 'en' %}space(s) found{% else %}مساحة متاحة{% endif %}
+    </p>
+    {% if query or selected_type or selected_city or min_price or max_price or min_cap or selected_rental %}
+    <a href="{% url 'spaces:list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-times me-1"></i>
+        {% if request.session.lang == 'en' %}Clear filters{% else %}مسح الفلاتر{% endif %}
+    </a>
+    {% endif %}
+</div>
+
+{% if page_obj.object_list %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for space in page_obj %}
+            {% include 'spaces/partials/_space_card.html' with space=space %}
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}&type={{ selected_type }}&city={{ selected_city }}&min_price={{ min_price }}&max_price={{ max_price }}&min_cap={{ min_cap }}&rental={{ selected_rental }}">
+                        {% if request.session.lang == 'en' %}Previous{% else %}السابق{% endif %}
+                    </a>
+                </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&q={{ query }}&type={{ selected_type }}&city={{ selected_city }}&min_price={{ min_price }}&max_price={{ max_price }}&min_cap={{ min_cap }}&rental={{ selected_rental }}">{{ num }}</a>
+                </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}&type={{ selected_type }}&city={{ selected_city }}&min_price={{ min_price }}&max_price={{ max_price }}&min_cap={{ min_cap }}&rental={{ selected_rental }}">
+                        {% if request.session.lang == 'en' %}Next{% else %}التالي{% endif %}
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+{% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">{% if request.session.lang == 'en' %}No spaces match your search{% else %}لا توجد مساحات مطابقة لبحثك{% endif %}</h4>
+        <a href="{% url 'spaces:list' %}" class="btn btn-outline-dark mt-2">
+            {% if request.session.lang == 'en' %}Reset search{% else %}إعادة تعيين البحث{% endif %}
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}

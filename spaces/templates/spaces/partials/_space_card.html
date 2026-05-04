@@ -1,0 +1,89 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'spaces/css/spaces.css' %}">
+{% endblock %}
+
+<div class="col">
+    <div class="card space-card h-100 position-relative">
+
+        <!-- Favorite button -->
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'favorites:toggle' space.pk %}" class="fav-form">
+            {% csrf_token %}
+            <button type="submit" class="fav-btn {% if space.pk in fav_ids %}active{% endif %}" title="مفضلة">
+                <i class="{% if space.pk in fav_ids %}fas{% else %}far{% endif %} fa-heart" style="color:{% if space.pk in fav_ids %}#e53935{% else %}#bbb{% endif %};"></i>
+            </button>
+        </form>
+        {% endif %}
+
+        <!-- Image -->
+        {% if space.main_image %}
+            <img src="{{ space.main_image.url }}" class="card-img-top" alt="{{ space.title }}">
+        {% else %}
+            <img src="https://placehold.co/400x200?text=SpaceHub" class="card-img-top" alt="لا توجد صورة">
+        {% endif %}
+
+        <!-- Dynamic discount badge -->
+        {% if space.allow_dynamic_pricing and space.discount_pct %}
+        <span class="position-absolute badge bg-danger" style="top:10px;right:10px;border-radius:20px;">
+            خصم {{ space.discount_pct }}%
+        </span>
+        {% endif %}
+
+        <div class="card-body pb-1">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="badge bg-primary">{{ space.get_space_type_display }}</span>
+                <span class="badge bg-secondary">{{ space.get_city_display }}</span>
+            </div>
+            <h6 class="card-title fw-bold mb-1">{{ space.title }}</h6>
+            <p class="card-text text-muted small mb-2" style="font-size:.8rem;">
+                <i class="fas fa-map-marker-alt me-1"></i>{{ space.address|truncatechars:40 }}
+            </p>
+
+            <!-- Amenity pills (first 3) -->
+            {% if space.amenities.exists %}
+            <div class="mb-2">
+                {% for amenity in space.amenities.all|slice:":3" %}
+                <span class="amenity-pill"><i class="{{ amenity.icon }} me-1"></i>{{ amenity.get_name_display }}</span>
+                {% endfor %}
+                {% if space.amenities.count > 3 %}
+                <span class="amenity-pill">+{{ space.amenities.count|add:"-3" }}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Rating -->
+            <div class="d-flex align-items-center mb-1">
+                {% if space.avg_rating %}
+                    <span class="text-warning me-1"><i class="fas fa-star" style="font-size:.8rem;"></i></span>
+                    <small class="fw-bold">{{ space.avg_rating|floatformat:1 }}</small>
+                    <small class="text-muted ms-1">({{ space.review_count }})</small>
+                {% else %}
+                    <small class="text-muted">لا يوجد تقييم بعد</small>
+                {% endif %}
+                <span class="distance-tag ms-auto">
+                    <i class="fas fa-users me-1"></i>{{ space.capacity }} شخص
+                </span>
+            </div>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between align-items-center bg-white border-0 pt-0">
+            <div>
+                <span class="price-tag">
+                    {% if space.allow_dynamic_pricing and space.discount_pct %}
+                        <del class="text-muted small" style="font-size:.8rem;">{{ space.price_per_day }}</del>
+                        {{ space.effective_price|floatformat:0 }}
+                    {% else %}
+                        {{ space.price_per_day }}
+                    {% endif %}
+                    <small>ريال/يوم</small>
+                </span>
+                <br>
+                <small class="text-muted" style="font-size:.72rem;">{{ space.get_rental_type_display }}</small>
+            </div>
+            <a href="{% url 'spaces:detail' space.pk %}" class="btn btn-sm btn-dark">
+                {% if request.session.lang == 'en' %}More{% else %}المزيد{% endif %}
+            </a>
+        </div>
+    </div>
+</div>
