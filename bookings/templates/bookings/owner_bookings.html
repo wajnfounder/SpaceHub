@@ -1,0 +1,126 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'bookings/css/bookings.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}Booking Requests{% else %}طلبات الحجز{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="owner-bookings-page">
+
+  <!-- Header -->
+  <div class="owner-bookings-header">
+    <h2>
+      <i class="fas fa-calendar-check"></i>
+      {% if request.session.lang == 'en' %}Booking Requests{% else %}طلبات الحجز على مساحاتي{% endif %}
+      <span style="font-weight:400;font-size:1rem;color:var(--muted);">
+        / {% if request.session.lang == 'en' %}My Spaces{% else %}مساحاتي{% endif %}
+      </span>
+    </h2>
+    {% if bookings %}
+    <span class="owner-count">
+      {{ bookings|length }}
+      {% if request.session.lang == 'en' %}request(s){% else %}طلب{% endif %}
+    </span>
+    {% endif %}
+  </div>
+
+  {% if bookings %}
+  <div class="owner-table-box">
+    <table class="owner-table">
+      <thead>
+        <tr>
+          <th>المساحة     <span>Space</span></th>
+          <th>المستأجر    <span>Tenant</span></th>
+          <th>من           <span>From</span></th>
+          <th>إلى          <span>To</span></th>
+          <th>الأيام       <span>Days</span></th>
+          <th>الإجمالي    <span>Total</span></th>
+          <th>الحالة       <span>Status</span></th>
+          <th>إجراءات     <span>Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for booking in bookings %}
+        <tr>
+          <td data-label="المساحة / Space"><strong>{{ booking.space.title }}</strong></td>
+          <td data-label="المستأجر / Tenant">{{ booking.tenant.get_full_name|default:booking.tenant.username }}</td>
+          <td data-label="من / From">{{ booking.date_from }}</td>
+          <td data-label="إلى / To">{{ booking.date_to }}</td>
+          <td data-label="الأيام / Days">
+            {{ booking.duration_days }}
+            {% if request.session.lang == 'en' %}d{% else %}يوم{% endif %}
+          </td>
+          <td data-label="الإجمالي / Total" class="price">
+            {{ booking.total_price }} <small>{% if request.session.lang == 'en' %}SAR{% else %}ريال{% endif %}</small>
+          </td>
+          <td data-label="الحالة / Status">
+            <span class="sbadge
+              {% if booking.status == 'confirmed' %}b-confirmed
+              {% elif booking.status == 'pending'   %}b-pending
+              {% elif booking.status == 'cancelled' %}b-cancelled
+              {% else %}b-completed{% endif %}">
+              {{ booking.get_status_display }}
+            </span>
+          </td>
+          <td data-label="إجراءات / Actions">
+            {% if booking.status == 'pending' %}
+              <form class="ifrm" method="post" action="{% url 'bookings:confirm' booking.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="abtn abtn-ok">
+                  <i class="fas fa-check"></i>
+                  {% if request.session.lang == 'en' %}Accept{% else %}قبول{% endif %}
+                </button>
+              </form>
+              <form class="ifrm" method="post" action="{% url 'bookings:cancel' booking.pk %}"
+                    onsubmit="return confirm('رفض هذا الطلب؟ / Reject?')">
+                {% csrf_token %}
+                <button type="submit" class="abtn abtn-can">
+                  <i class="fas fa-times"></i>
+                  {% if request.session.lang == 'en' %}Reject{% else %}رفض{% endif %}
+                </button>
+              </form>
+
+            {% elif booking.status == 'confirmed' %}
+              <form class="ifrm" method="post" action="{% url 'bookings:complete' booking.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="abtn abtn-done">
+                  <i class="fas fa-flag-checkered"></i>
+                  {% if request.session.lang == 'en' %}Complete{% else %}مكتمل{% endif %}
+                </button>
+              </form>
+              <form class="ifrm" method="post" action="{% url 'bookings:cancel' booking.pk %}"
+                    onsubmit="return confirm('إلغاء هذا الحجز؟ / Cancel?')">
+                {% csrf_token %}
+                <button type="submit" class="abtn abtn-can">
+                  <i class="fas fa-ban"></i>
+                  {% if request.session.lang == 'en' %}Cancel{% else %}إلغاء{% endif %}
+                </button>
+              </form>
+
+            {% else %}
+              <span style="color:var(--muted);font-size:.78rem;">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <div class="owner-table-box">
+    <div class="owner-empty">
+      <i class="fas fa-inbox"></i>
+      <h4>{% if request.session.lang == 'en' %}No booking requests yet{% else %}لا توجد طلبات حجز بعد{% endif %}</h4>
+      <p>{% if request.session.lang == 'en' %}Requests will appear here when tenants book your spaces{% else %}ستظهر الطلبات هنا عندما يحجز المستأجرون مساحاتك{% endif %}</p>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

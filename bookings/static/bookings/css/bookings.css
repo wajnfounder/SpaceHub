@@ -1,0 +1,562 @@
+/* ══════════════════════════════════════════════
+   my_bookings.css — حجوزاتي — بيج فاتح
+   ══════════════════════════════════════════════ */
+
+:root {
+  --gold:       #C8A96E;
+  --gold-light: #DFC08A;
+  --gold-dim:   rgba(200,169,110,.1);
+  --dark:       #1a1814;
+  --cream:      #F5EFE6;
+  --cream-2:    #EDE5D8;
+  --white:      #FFFFFF;
+  --muted:      rgba(26,24,20,.45);
+  --text-dark:  #1a1814;
+  --border:     rgba(200,169,110,.2);
+  --radius:     12px;
+  --ease:       all .2s ease;
+}
+
+/* ── Page ───────────────────────────────────── */
+.bookings-page {
+  background:  var(--cream);
+  min-height:  100vh;
+  padding:     2.5rem 2rem 5rem;
+  font-family: 'Tajawal', sans-serif;
+  direction:   rtl;
+}
+
+/* ── Header ─────────────────────────────────── */
+.bookings-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  flex-wrap:       wrap;
+  gap:             1rem;
+  margin-bottom:   2rem;
+  padding-bottom:  1.5rem;
+  border-bottom:   1px solid var(--cream-2);
+}
+.bookings-header h2 {
+  font-size:   1.4rem;
+  font-weight: 800;
+  color:       var(--text-dark);
+  margin:      0;
+}
+.bookings-header h2 i { color: var(--gold); margin-left: .5rem; }
+.bookings-count {
+  background:    var(--gold-dim);
+  border:        1px solid var(--border);
+  color:         var(--dark);
+  font-size:     .75rem;
+  font-weight:   700;
+  padding:       .35rem .9rem;
+  border-radius: 99px;
+}
+
+/* ── Booking Card ───────────────────────────── */
+.booking-card {
+  background:    var(--white);
+  border:        1px solid var(--cream-2);
+  border-radius: var(--radius);
+  padding:       1.2rem 1.4rem;
+  margin-bottom: 1rem;
+  display:       flex;
+  align-items:   center;
+  gap:           1.2rem;
+  transition:    var(--ease);
+}
+.booking-card:hover {
+  border-color: rgba(200,169,110,.4);
+  box-shadow:   0 4px 20px rgba(200,169,110,.12);
+  transform:    translateY(-1px);
+}
+
+/* Image */
+.booking-img {
+  width:         80px;
+  height:        65px;
+  border-radius: 8px;
+  object-fit:    cover;
+  flex-shrink:   0;
+}
+.booking-img-placeholder {
+  width:           80px;
+  height:          65px;
+  border-radius:   8px;
+  background:      var(--cream);
+  border:          1px solid var(--cream-2);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+}
+.booking-img-placeholder i { color: rgba(26,24,20,.25); font-size: 1.4rem; }
+
+/* Info */
+.booking-info { flex: 1; min-width: 0; }
+.booking-title {
+  font-size:       .95rem;
+  font-weight:     700;
+  color:           var(--text-dark);
+  text-decoration: none;
+  display:         block;
+  margin-bottom:   .3rem;
+  white-space:     nowrap;
+  overflow:        hidden;
+  text-overflow:   ellipsis;
+}
+.booking-title:hover { color: var(--gold); }
+.booking-meta {
+  font-size:   .78rem;
+  color:       var(--muted);
+  display:     flex;
+  flex-wrap:   wrap;
+  gap:         .6rem;
+  align-items: center;
+}
+.booking-meta i { color: var(--gold); font-size: .7rem; }
+.booking-notes {
+  font-size:     .76rem;
+  color:         var(--muted);
+  margin-top:    .3rem;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+.booking-notes i { color: var(--gold); margin-left: .3rem; }
+
+/* Price & Status */
+.booking-status-col { text-align: center; flex-shrink: 0; }
+.booking-price {
+  font-size:     .95rem;
+  font-weight:   800;
+  color:         var(--dark);
+  margin-bottom: .4rem;
+  direction:     ltr;
+  display:       block;
+}
+.booking-price small { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+/* Status Badges */
+.sbadge {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           .35rem;
+  font-size:     .7rem;
+  font-weight:   700;
+  padding:       .25rem .65rem;
+  border-radius: 99px;
+}
+.sbadge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.b-confirmed { background: rgba(52,211,153,.1);  color: #0a7a50; border: 1px solid rgba(52,211,153,.3); }
+.b-confirmed::before { background: #0a7a50; }
+.b-pending   { background: var(--gold-dim); color: #7a5c1e; border: 1px solid var(--border); }
+.b-pending::before   { background: var(--gold); animation: blink 1.4s infinite; }
+.b-cancelled { background: rgba(239,68,68,.08); color: #a32d2d; border: 1px solid rgba(239,68,68,.2); }
+.b-cancelled::before { background: #a32d2d; }
+.b-completed { background: var(--cream-2); color: var(--muted); border: 1px solid var(--border); }
+.b-completed::before { background: var(--muted); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* Actions */
+.booking-actions {
+  display:        flex;
+  flex-direction: column;
+  gap:            .5rem;
+  flex-shrink:    0;
+}
+.abtn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             .3rem;
+  font-size:       .75rem;
+  font-weight:     600;
+  padding:         .3rem .8rem;
+  border-radius:   6px;
+  border:          1px solid transparent;
+  background:      transparent;
+  cursor:          pointer;
+  font-family:     'Tajawal', sans-serif;
+  text-decoration: none;
+  transition:      var(--ease);
+  white-space:     nowrap;
+}
+.abtn-pay        { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+.abtn-pay:hover  { background: var(--gold-light); color: var(--dark); }
+.abtn-cancel     { color: #a32d2d; border-color: rgba(239,68,68,.2); }
+.abtn-cancel:hover { background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.4); }
+.abtn-review     { color: var(--dark); border-color: var(--border); }
+.abtn-review:hover { background: var(--gold-dim); border-color: var(--gold); }
+.ifrm { display: contents; }
+
+/* ── Empty State ────────────────────────────── */
+.bookings-empty { text-align: center; padding: 5rem 2rem; }
+.bookings-empty i { font-size: 3rem; color: rgba(200,169,110,.4); display: block; margin-bottom: 1rem; }
+.bookings-empty h4 { font-size: 1.1rem; color: var(--muted); margin-bottom: 1.2rem; }
+.bookings-empty h4 span { display: block; font-size: .85rem; opacity: .7; margin-top: .2rem; }
+.bookings-empty a {
+  display:         inline-block;
+  background:      var(--dark);
+  color:           var(--cream);
+  font-weight:     700;
+  font-size:       .88rem;
+  padding:         .65rem 1.6rem;
+  border-radius:   99px;
+  text-decoration: none;
+  transition:      var(--ease);
+}
+.bookings-empty a:hover { background: var(--gold); color: var(--dark); }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+  .bookings-page  { padding: 1.5rem 1rem 4rem; }
+  .booking-card   { flex-wrap: wrap; }
+  .booking-img, .booking-img-placeholder { display: none; }
+  .booking-status-col { order: -1; text-align: right; }
+  .booking-actions { flex-direction: row; flex-wrap: wrap; }
+}
+/* ══════════════════════════════════════════════
+   booking_create.css — نموذج الحجز — بيج فاتح
+   ══════════════════════════════════════════════ */
+
+:root {
+  --gold:       #C8A96E;
+  --gold-light: #DFC08A;
+  --gold-dim:   rgba(200,169,110,.1);
+  --dark:       #1a1814;
+  --cream:      #F5EFE6;
+  --cream-2:    #EDE5D8;
+  --white:      #FFFFFF;
+  --muted:      rgba(26,24,20,.45);
+  --text-dark:  #1a1814;
+  --border:     rgba(200,169,110,.2);
+  --radius:     12px;
+  --ease:       all .2s ease;
+}
+
+/* ── Page ───────────────────────────────────── */
+.book-page {
+  background:      var(--cream);
+  min-height:      100vh;
+  display:         flex;
+  align-items:     flex-start;
+  justify-content: center;
+  padding:         3rem 1rem 5rem;
+  font-family:     'Tajawal', sans-serif;
+  direction:       rtl;
+}
+
+/* ── Card ───────────────────────────────────── */
+.book-card {
+  background:    var(--white);
+  border:        1px solid var(--cream-2);
+  border-radius: var(--radius);
+  padding:       2.5rem 2rem;
+  width:         100%;
+  max-width:     520px;
+  box-shadow:    0 2px 16px rgba(200,169,110,.08);
+}
+
+/* ── Header ─────────────────────────────────── */
+.book-header { margin-bottom: 1.8rem; }
+.book-header h3 {
+  font-size:   1.3rem;
+  font-weight: 800;
+  color:       var(--text-dark);
+  margin:      0 0 .3rem;
+}
+.book-header p {
+  font-size: .83rem;
+  color:     var(--muted);
+  margin:    0;
+}
+.book-header p i { color: var(--gold); margin-left: .3rem; }
+
+/* ── Price info box ─────────────────────────── */
+.book-info {
+  display:       flex;
+  align-items:   center;
+  gap:           .8rem;
+  background:    var(--gold-dim);
+  border:        1px solid var(--border);
+  border-radius: 8px;
+  padding:       .85rem 1.1rem;
+  margin-bottom: 1.8rem;
+  font-size:     .85rem;
+  color:         var(--muted);
+}
+.book-info i      { color: var(--gold); font-size: 1rem; flex-shrink: 0; }
+.book-info strong { color: var(--dark); font-weight: 800; }
+
+/* ── Form labels ────────────────────────────── */
+.book-field { margin-bottom: 1.1rem; }
+.book-lbl {
+  display:        block;
+  font-size:      .8rem;
+  font-weight:    700;
+  color:          var(--muted);
+  margin-bottom:  .4rem;
+  letter-spacing: .3px;
+}
+
+/* ── Inputs ─────────────────────────────────── */
+.book-input,
+.book-field input,
+.book-field textarea,
+.book-field select {
+  width:         100%;
+  background:    var(--cream);
+  border:        1px solid var(--cream-2);
+  border-radius: 8px;
+  padding:       .7rem 1rem;
+  color:         var(--text-dark);
+  font-family:   'Tajawal', sans-serif;
+  font-size:     .9rem;
+  outline:       none;
+  transition:    var(--ease);
+  box-sizing:    border-box;
+}
+.book-field input::placeholder,
+.book-field textarea::placeholder { color: var(--muted); }
+.book-field input:focus,
+.book-field textarea:focus,
+.book-field select:focus {
+  border-color: var(--gold);
+  background:   var(--white);
+  box-shadow:   0 0 0 3px rgba(200,169,110,.1);
+}
+.book-field textarea { resize: vertical; min-height: 90px; }
+
+/* ── Errors ─────────────────────────────────── */
+.book-error {
+  font-size:  .78rem;
+  color:      #a32d2d;
+  margin-top: .3rem;
+}
+.book-error-box {
+  background:    rgba(239,68,68,.06);
+  border:        1px solid rgba(239,68,68,.2);
+  border-radius: 8px;
+  padding:       .7rem 1rem;
+  margin-bottom: 1.2rem;
+  font-size:     .82rem;
+  color:         #a32d2d;
+}
+
+/* ── Buttons ────────────────────────────────── */
+.book-actions { display: flex; gap: .8rem; margin-top: 1.5rem; }
+.book-btn-submit {
+  flex:          1;
+  background:    var(--dark);
+  color:         var(--cream);
+  border:        none;
+  border-radius: 8px;
+  padding:       .8rem;
+  font-family:   'Tajawal', sans-serif;
+  font-size:     .95rem;
+  font-weight:   700;
+  cursor:        pointer;
+  transition:    var(--ease);
+}
+.book-btn-submit:hover {
+  background: var(--gold);
+  color:      var(--dark);
+  transform:  translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200,169,110,.25);
+}
+.book-btn-cancel {
+  background:      transparent;
+  color:           var(--muted);
+  border:          1px solid var(--cream-2);
+  border-radius:   8px;
+  padding:         .8rem 1.4rem;
+  font-family:     'Tajawal', sans-serif;
+  font-size:       .9rem;
+  font-weight:     500;
+  text-decoration: none;
+  transition:      var(--ease);
+  display:         flex;
+  align-items:     center;
+  gap:             .4rem;
+}
+.book-btn-cancel:hover { border-color: var(--gold); color: var(--dark); }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 480px) {
+  .book-card    { padding: 2rem 1.2rem; }
+  .book-actions { flex-direction: column; }
+}
+/* ══════════════════════════════════════════════
+   owner_bookings.css — طلبات الحجز (المالك)
+   ══════════════════════════════════════════════ */
+
+:root {
+  --gold:       #C8A96E;
+  --gold-light: #DFC08A;
+  --gold-dim:   rgba(200,169,110,.1);
+  --dark:       #1a1814;
+  --cream:      #F5EFE6;
+  --cream-2:    #EDE5D8;
+  --white:      #FFFFFF;
+  --muted:      rgba(26,24,20,.45);
+  --text-dark:  #1a1814;
+  --border:     rgba(200,169,110,.2);
+  --radius:     12px;
+  --ease:       all .2s ease;
+}
+
+/* ── Page ───────────────────────────────────── */
+.owner-bookings-page {
+  background:  var(--cream);
+  min-height:  100vh;
+  padding:     2.5rem 2rem 5rem;
+  font-family: 'Tajawal', sans-serif;
+  direction:   rtl;
+}
+
+/* ── Header ─────────────────────────────────── */
+.owner-bookings-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  flex-wrap:       wrap;
+  gap:             1rem;
+  margin-bottom:   2rem;
+  padding-bottom:  1.5rem;
+  border-bottom:   1px solid var(--cream-2);
+}
+.owner-bookings-header h2 {
+  font-size:   1.4rem;
+  font-weight: 800;
+  color:       var(--text-dark);
+  margin:      0;
+}
+.owner-bookings-header h2 i { color: var(--gold); margin-left: .5rem; }
+.owner-count {
+  background:    var(--gold-dim);
+  border:        1px solid var(--border);
+  color:         var(--dark);
+  font-size:     .75rem;
+  font-weight:   700;
+  padding:       .35rem .9rem;
+  border-radius: 99px;
+}
+
+/* ── Table box ──────────────────────────────── */
+.owner-table-box {
+  background:    var(--white);
+  border:        1px solid var(--cream-2);
+  border-radius: var(--radius);
+  overflow:      hidden;
+  box-shadow:    0 2px 16px rgba(200,169,110,.06);
+}
+.owner-table {
+  width:           100%;
+  border-collapse: collapse;
+  font-size:       .84rem;
+}
+.owner-table thead th {
+  background:     var(--cream);
+  color:          var(--muted);
+  font-size:      .68rem;
+  font-weight:    700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding:        .85rem 1.1rem;
+  text-align:     right;
+  border-bottom:  1px solid var(--cream-2);
+  white-space:    nowrap;
+}
+.owner-table thead th span {
+  display:        block;
+  font-size:      .62rem;
+  opacity:        .65;
+  font-weight:    400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.owner-table tbody tr {
+  border-bottom: 1px solid var(--cream-2);
+  transition:    var(--ease);
+}
+.owner-table tbody tr:last-child { border-bottom: none; }
+.owner-table tbody tr:hover      { background: rgba(200,169,110,.04); }
+.owner-table td {
+  padding:        .95rem 1.1rem;
+  color:          var(--text-dark);
+  vertical-align: middle;
+}
+.owner-table td strong { font-weight: 700; }
+
+/* ── Status Badges ──────────────────────────── */
+.sbadge {
+  display:       inline-flex;
+  align-items:   center;
+  gap:           .35rem;
+  font-size:     .7rem;
+  font-weight:   700;
+  padding:       .25rem .65rem;
+  border-radius: 99px;
+}
+.sbadge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.b-confirmed { background: rgba(52,211,153,.1);  color: #0a7a50; border: 1px solid rgba(52,211,153,.3); }
+.b-confirmed::before { background: #0a7a50; }
+.b-pending   { background: var(--gold-dim); color: #7a5c1e; border: 1px solid var(--border); }
+.b-pending::before   { background: var(--gold); animation: blink 1.4s infinite; }
+.b-cancelled { background: rgba(239,68,68,.08); color: #a32d2d; border: 1px solid rgba(239,68,68,.2); }
+.b-cancelled::before { background: #a32d2d; }
+.b-completed { background: var(--cream-2); color: var(--muted); border: 1px solid var(--border); }
+.b-completed::before { background: var(--muted); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── Price ──────────────────────────────────── */
+.price { color: var(--dark); font-weight: 700; }
+.price small { font-size: .72rem; color: var(--muted); font-weight: 400; }
+
+/* ── Action Buttons ─────────────────────────── */
+.abtn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             .3rem;
+  font-size:       .74rem;
+  font-weight:     600;
+  padding:         .28rem .7rem;
+  border-radius:   6px;
+  border:          1px solid transparent;
+  background:      transparent;
+  cursor:          pointer;
+  font-family:     'Tajawal', sans-serif;
+  text-decoration: none;
+  transition:      var(--ease);
+}
+.abtn-ok     { color: #0a7a50; border-color: rgba(52,211,153,.25); }
+.abtn-ok:hover     { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.4); }
+.abtn-done   { color: var(--muted); border-color: var(--cream-2); }
+.abtn-done:hover   { background: var(--cream-2); border-color: var(--border); color: var(--dark); }
+.abtn-can    { color: #a32d2d; border-color: rgba(239,68,68,.2); }
+.abtn-can:hover    { background: rgba(239,68,68,.06); border-color: rgba(239,68,68,.4); }
+.ifrm { display: inline; }
+
+/* ── Empty State ────────────────────────────── */
+.owner-empty { text-align: center; padding: 4rem 2rem; }
+.owner-empty i { font-size: 3rem; color: rgba(200,169,110,.35); display: block; margin-bottom: 1rem; }
+.owner-empty h4 { font-size: 1.1rem; color: var(--muted); margin-bottom: .4rem; }
+.owner-empty p  { font-size: .85rem; color: var(--muted); opacity: .7; }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+  .owner-bookings-page { padding: 1.5rem 1rem 4rem; }
+  .owner-table thead   { display: none; }
+  .owner-table tr      { display: block; border-bottom: 1px solid var(--cream-2); padding: .4rem 0; }
+  .owner-table td      { display: flex; justify-content: space-between; align-items: center; padding: .45rem 1rem; }
+  .owner-table td::before {
+    content:     attr(data-label);
+    font-size:   .68rem;
+    color:       var(--muted);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: 1rem;
+  }
+}

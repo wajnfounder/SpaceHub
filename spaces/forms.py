@@ -10,8 +10,7 @@ class SpaceForm(forms.ModelForm):
             'title', 'description', 'space_type', 'city', 'address',
             'price_per_day', 'price_monthly', 'price_yearly', 'rental_type',
             'capacity', 'area_sqm', 'status',
-            'maps_embed_url', 'video_url', 'virtual_tour',
-            'allow_dynamic_pricing', 'discount_pct',
+            'maps_embed_url', 'discount_pct',
         ]
         labels = {
             'title': 'اسم المساحة', 'description': 'الوصف',
@@ -23,8 +22,6 @@ class SpaceForm(forms.ModelForm):
             'capacity': 'السعة (أشخاص)', 'area_sqm': 'المساحة (م²)',
             'status': 'الحالة',
             'maps_embed_url': 'رابط تضمين خرائط Google',
-            'virtual_tour': 'جولة افتراضية 360°',
-            'allow_dynamic_pricing': 'تفعيل التسعير الديناميكي',
             'discount_pct': 'نسبة الخصم %',
         }
         widgets = {

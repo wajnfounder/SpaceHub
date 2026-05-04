@@ -1,0 +1,132 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'bookings/css/bookings.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}My Bookings{% else %}حجوزاتي{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="bookings-page">
+
+  <!-- Header -->
+  <div class="bookings-header">
+    <h2>
+      <i class="fas fa-list-alt"></i>
+      {% if request.session.lang == 'en' %}My Bookings{% else %}حجوزاتي{% endif %}
+      <span style="font-weight:400;font-size:1rem;color:var(--muted);">
+        / {% if request.session.lang == 'en' %}Reservations{% else %}الحجوزات{% endif %}
+      </span>
+    </h2>
+    {% if bookings %}
+    <span class="bookings-count">
+      {{ bookings|length }}
+      {% if request.session.lang == 'en' %}booking(s){% else %}حجز{% endif %}
+    </span>
+    {% endif %}
+  </div>
+
+  {% if bookings %}
+
+    {% for booking in bookings %}
+    <div class="booking-card">
+
+      <!-- Image -->
+      {% if booking.space.main_image %}
+        <img src="{{ booking.space.main_image.url }}" class="booking-img" alt="{{ booking.space.title }}">
+      {% else %}
+        <div class="booking-img-placeholder">
+          <i class="fas fa-building"></i>
+        </div>
+      {% endif %}
+
+      <!-- Info -->
+      <div class="booking-info">
+        <a href="{% url 'spaces:detail' booking.space.pk %}" class="booking-title">
+          {{ booking.space.title }}
+        </a>
+        <div class="booking-meta">
+          <span><i class="fas fa-map-marker-alt"></i> {{ booking.space.get_city_display }}</span>
+          <span><i class="fas fa-calendar"></i> {{ booking.date_from }} ← {{ booking.date_to }}</span>
+          <span><i class="fas fa-moon"></i>
+            {{ booking.duration_days }}
+            {% if request.session.lang == 'en' %}days{% else %}يوم{% endif %}
+          </span>
+        </div>
+        {% if booking.notes %}
+        <div class="booking-notes">
+          <i class="fas fa-sticky-note"></i>{{ booking.notes|truncatechars:60 }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Price & Status -->
+      <div class="booking-status-col">
+        <span class="booking-price">
+          {{ booking.total_price }} <small>{% if request.session.lang == 'en' %}SAR{% else %}ريال{% endif %}</small>
+        </span>
+        <span class="sbadge
+          {% if booking.status == 'confirmed' %}b-confirmed
+          {% elif booking.status == 'pending'   %}b-pending
+          {% elif booking.status == 'cancelled' %}b-cancelled
+          {% else %}b-completed{% endif %}">
+          {{ booking.get_status_display }}
+        </span>
+      </div>
+
+      <!-- Actions -->
+      <div class="booking-actions">
+
+        {% if booking.status == 'pending' %}
+          {% if not booking.payment or booking.payment.status != 'completed' %}
+          <a href="{% url 'payment:checkout' booking.pk %}" class="abtn abtn-pay">
+            <i class="fas fa-credit-card"></i>
+            {% if request.session.lang == 'en' %}Pay{% else %}ادفع{% endif %}
+          </a>
+          {% endif %}
+        {% endif %}
+
+        {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+        <form class="ifrm" method="post" action="{% url 'bookings:cancel' booking.pk %}"
+            onsubmit="return confirm('إلغاء هذا الحجز؟ / Cancel this booking?')" >
+          {% csrf_token %}
+          <button type="submit" class="abtn abtn-cancel">
+            <i class="fas fa-ban"></i>
+            {% if request.session.lang == 'en' %}Cancel{% else %}إلغاء{% endif %}
+          </button>
+        </form>
+        {% endif %}
+
+        {% if booking.status == 'completed' %}
+        <a href="{% url 'spaces:detail' booking.space.pk %}" class="abtn abtn-review">
+          <i class="fas fa-star"></i>
+          {% if request.session.lang == 'en' %}Review{% else %}قيّم{% endif %}
+        </a>
+        {% endif %}
+
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+
+    <!-- Empty State -->
+    <div class="bookings-empty">
+      <i class="fas fa-calendar-times"></i>
+      <h4>
+        {% if request.session.lang == 'en' %}No bookings yet{% else %}لا توجد حجوزات بعد{% endif %}
+        <span>{% if request.session.lang == 'en' %}Start exploring spaces below{% else %}ابدأ بتصفح المساحات{% endif %}</span>
+      </h4>
+      <a href="{% url 'spaces:list' %}">
+        <i class="fas fa-search" style="margin-left:.4rem;"></i>
+        {% if request.session.lang == 'en' %}Find a Space{% else %}ابحث عن مساحة{% endif %}
+      </a>
+    </div>
+
+  {% endif %}
+
+</div>
+{% endblock %}

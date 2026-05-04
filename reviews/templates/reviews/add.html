@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'reviews/css/review.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}Review {{ space.title }}{% else %}تقييم {{ space.title }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="review-page">
+  <div class="review-card">
+
+    <!-- Header -->
+    <div class="review-header">
+      <h4>
+        <i class="fas fa-star"></i>
+        {% if request.session.lang == 'en' %}Rate this Space{% else %}تقييم المساحة{% endif %}
+      </h4>
+      <p>{{ space.title }}</p>
+    </div>
+
+    <!-- Stars hint -->
+    <div class="stars-hint">
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+      <i class="fas fa-star"></i>
+    </div>
+
+    <!-- Form -->
+    <form method="post">
+      {% csrf_token %}
+
+      {% for field in form %}
+      <div class="review-field">
+        <label class="review-lbl" for="{{ field.id_for_label }}">
+          {{ field.label }}
+        </label>
+        {{ field }}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="review-error">
+              <i class="fas fa-exclamation-circle" style="margin-left:.3rem;"></i>{{ error }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <!-- Actions -->
+      <div class="review-actions">
+        <button type="submit" class="review-btn-submit">
+          <i class="fas fa-paper-plane" style="margin-left:.5rem;"></i>
+          {% if request.session.lang == 'en' %}Submit Review{% else %}إرسال التقييم{% endif %}
+        </button>
+        <a href="{% url 'spaces:detail' space.pk %}" class="review-btn-cancel">
+          <i class="fas fa-times"></i>
+          {% if request.session.lang == 'en' %}Cancel{% else %}إلغاء{% endif %}
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('input[type=number], textarea').forEach(el => {
+    el.classList.add('review-input');
+  });
+</script>
+{% endblock %}

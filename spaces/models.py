@@ -92,16 +92,14 @@ class Space(models.Model):
 
     # Media & Location
     maps_embed_url = models.URLField(blank=True, verbose_name='رابط تضمين خرائط Google')
-    video_url      = models.URLField(blank=True, verbose_name='رابط فيديو (YouTube/Vimeo)')
-    virtual_tour   = models.URLField(blank=True, verbose_name='جولة افتراضية 360°')
 
     # Dynamic pricing flag
-    allow_dynamic_pricing = models.BooleanField(default=False,
-                                                verbose_name='تسعير ديناميكي')
+    allow_dynamic_pricing = models.BooleanField(default=False)
     discount_pct          = models.PositiveSmallIntegerField(default=0,
+                                                              null=True, blank=True,
                                                              verbose_name='نسبة الخصم %')
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True) 
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

@@ -17,7 +17,12 @@
                 <div class="row g-3">
                     {% for field in form %}
                         <div class="col-md-{% if field.name == 'description' %}12{% else %}6{% endif %}">
-                            <label class="form-label fw-bold">{{ field.label }}</label>
+                           <label class="form-label fw-bold">
+    {{ field.label }}
+    {% if field.field.required %}
+        <span style="color:#e05c5c;">*</span>
+    {% endif %}
+</label>
                             {{ field }}
                             {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors }}</div>{% endif %}
                         </div>
@@ -29,7 +34,12 @@
                     </div>
                     {% for field in image_form %}
                         <div class="col-md-6">
-                            <label class="form-label">{{ field.label }}</label>
+                        <label class="form-label fw-bold">
+                            {{ field.label }}
+                            {% if field.field.required %}
+                           <span style="color:#e05c5c;">*</span>
+                            {% endif %}
+                        </label>
                             {{ field }}
                         </div>
                     {% endfor %}
