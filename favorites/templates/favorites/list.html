@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'favorites/css/favorites.css' %}">
+{% endblock %}
+
+{% block title %}
+  {% if request.session.lang == 'en' %}My Favorites{% else %}مفضلتي{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="fav-page">
+
+  <!-- Header -->
+  <div class="fav-header">
+    <h2>
+      <i class="fas fa-heart"></i>
+      {% if request.session.lang == 'en' %}My Favorites{% else %}المساحات المحفوظة{% endif %}
+      <span style="font-weight:400;font-size:1rem;color:var(--muted);">
+        / {% if request.session.lang == 'en' %}Saved Spaces{% else %}المفضلة{% endif %}
+      </span>
+    </h2>
+    {% if favorites %}
+    <span class="fav-count">
+      {{ favorites|length }}
+      {% if request.session.lang == 'en' %}saved{% else %}محفوظ{% endif %}
+    </span>
+    {% endif %}
+  </div>
+
+  {% if favorites %}
+  <div class="fav-grid">
+    {% for fav in favorites %}
+    <div class="fav-card">
+
+      <!-- Image -->
+      <div class="fav-img-wrap">
+        {% if fav.space.main_image %}
+          <img src="{{ fav.space.main_image.url }}" alt="{{ fav.space.title }}">
+        {% else %}
+          <img src="https://placehold.co/400x180?text=SpaceHub" alt="">
+        {% endif %}
+        <div class="fav-img-overlay"></div>
+        <span class="fav-type-badge">{{ fav.space.get_space_type_display }}</span>
+      </div>
+
+      <!-- Body -->
+      <div class="fav-body">
+        <div class="fav-city">
+          <i class="fas fa-map-marker-alt"></i>
+          {{ fav.space.get_city_display }}
+        </div>
+        <div class="fav-title">{{ fav.space.title }}</div>
+        {% if fav.space.address %}
+        <div class="fav-address">
+          <i class="fas fa-location-dot"></i>{{ fav.space.address|truncatechars:50 }}
+        </div>
+        {% endif %}
+        <div class="fav-price">
+          {{ fav.space.price_per_day }}
+          <small>{% if request.session.lang == 'en' %}SAR / day{% else %}ريال / يوم{% endif %}</small>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="fav-footer">
+        <a href="{% url 'spaces:detail' fav.space.pk %}" class="fav-btn-view">
+          <i class="fas fa-eye"></i>
+          {% if request.session.lang == 'en' %}View Details{% else %}عرض التفاصيل{% endif %}
+        </a>
+        <form class="ifrm" method="post" action="{% url 'favorites:toggle' fav.space.pk %}"
+              onsubmit="return confirm('حذف من المفضلة؟ / Remove from favorites?')">
+          {% csrf_token %}
+          <button type="submit" class="fav-btn-remove" title="{% if request.session.lang == 'en' %}Remove{% else %}حذف{% endif %}">
+            <i class="fas fa-heart-broken"></i>
+          </button>
+        </form>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="fav-empty">
+    <i class="far fa-heart"></i>
+    <h4>{% if request.session.lang == 'en' %}No saved spaces yet{% else %}لا توجد مساحات محفوظة بعد{% endif %}</h4>
+    <p>{% if request.session.lang == 'en' %}Save spaces you like to find them easily later{% else %}احفظ المساحات التي تعجبك لتجدها بسهولة لاحقاً{% endif %}</p>
+    <a href="{% url 'spaces:list' %}">
+      <i class="fas fa-search"></i>
+      {% if request.session.lang == 'en' %}Browse Spaces{% else %}استعرض المساحات{% endif %}
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
