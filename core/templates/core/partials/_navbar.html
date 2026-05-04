@@ -39,16 +39,10 @@
 
               {% if user.is_authenticated %}
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            {% if request.session.lang == 'en' %}Bookings{% else %}الحجوزات{% endif %}
+        <a class="nav-link" href="{% url 'bookings:my_bookings' %}">
+    {% if request.session.lang == 'en' %}Bookings{% else %}الحجوزات{% endif %}
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="#">
-            {% if request.session.lang == 'en' %}Favorites{% else %}المفضلة{% endif %}
-        </a>
-    </li>
-
 
 
 
@@ -57,7 +51,7 @@
 
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{% url 'favorites:list' %}">
                             {% if request.session.lang == 'en' %}Favorites{% else %}المفضلة{% endif %}
                         </a>
                     </li>
