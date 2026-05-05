@@ -7,54 +7,60 @@
 {% block title %}{% if request.session.lang == 'en' %}Sign In{% else %}تسجيل الدخول{% endif %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
+<div class="auth-wrapper">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
         <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-4" {% if request.session.lang == 'en' %}dir="ltr" style="text-align:left;"{% endif %}>
+          <div class="card-body p-4" {% if request.session.lang == 'en' %}dir="ltr" style="text-align:left;"{% endif %}>
 
-                <h3 class="text-center mb-4 fw-bold">
-                    {% if request.session.lang == 'en' %}Sign In{% else %}تسجيل الدخول{% endif %}
-                </h3>
+            <h3 class="text-center mb-4 fw-bold">
+              {% if request.session.lang == 'en' %}Sign In{% else %}تسجيل الدخول{% endif %}
+            </h3>
 
-                <form method="post">
-                    {% csrf_token %}
+            <form method="post">
+              {% csrf_token %}
 
-                    {% if request.session.lang == 'en' %}
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" required autofocus>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-dark w-100 py-2">Sign In</button>
-                    {% else %}
-                        <div class="mb-3">
-                            <label class="form-label">اسم المستخدم</label>
-                            <input type="text" name="username" class="form-control" required autofocus>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">كلمة المرور</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-dark w-100 py-2">دخول</button>
-                    {% endif %}
+              {% if request.session.lang == 'en' %}
+                <div class="mb-3">
+                  <label class="form-label">Username</label>
+                  <input type="text" name="username" class="form-control" required autofocus>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-dark w-100 py-2">Sign In</button>
+              {% else %}
+                <div class="mb-3">
+                  <label class="form-label">اسم المستخدم</label>
+                  <input type="text" name="username" class="form-control" required autofocus>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">كلمة المرور</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-dark w-100 py-2">دخول</button>
+              {% endif %}
 
-                </form>
-                <hr>
-                <p class="text-center mb-0">
-                    {% if request.session.lang == 'en' %}
-                        Don't have an account?
-                        <a href="{% url 'accounts:register' %}" class="text-warning fw-bold">Sign Up</a>
-                    {% else %}
-                        ليس لديك حساب؟
-                        <a href="{% url 'accounts:register' %}" class="text-warning fw-bold">أنشئ حساباً</a>
-                    {% endif %}
-                </p>
+            </form>
 
-            </div>
+            <hr>
+
+            <p class="text-center mb-0">
+              {% if request.session.lang == 'en' %}
+                Don't have an account?
+                <a href="{% url 'accounts:register' %}" class="text-warning fw-bold">Sign Up</a>
+              {% else %}
+                ليس لديك حساب؟
+                <a href="{% url 'accounts:register' %}" class="text-warning fw-bold">أنشئ حساباً</a>
+              {% endif %}
+            </p>
+
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

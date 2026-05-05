@@ -11,7 +11,6 @@
 
 <div class="contact-page">
 
-  <!-- Header -->
   <div class="contact-header">
     <div class="h-label">{% if request.session.lang == 'en' %}GET IN TOUCH{% else %}تواصل معنا{% endif %}</div>
     <h1>{% if request.session.lang == 'en' %}We'd love to hear<br>from you{% else %}يسعدنا سماعك{% endif %}</h1>
@@ -23,19 +22,19 @@
     <!-- Form -->
     <div class="contact-form-card">
       <h4>{% if request.session.lang == 'en' %}Send a Message{% else %}أرسل رسالة{% endif %}</h4>
-      <form>
+      <form method="post">
         {% csrf_token %}
         <div class="mb-3">
           <label class="form-label">{% if request.session.lang == 'en' %}Full Name{% else %}الاسم الكامل{% endif %}</label>
-          <input type="text" class="form-control" placeholder="{% if request.session.lang == 'en' %}Your name{% else %}اسمك{% endif %}">
+          <input type="text" name="name" class="form-control" placeholder="{% if request.session.lang == 'en' %}Your name{% else %}اسمك{% endif %}" required>
         </div>
         <div class="mb-3">
           <label class="form-label">{% if request.session.lang == 'en' %}Email{% else %}البريد الإلكتروني{% endif %}</label>
-          <input type="email" class="form-control" placeholder="{% if request.session.lang == 'en' %}your@email.com{% else %}بريدك@example.com{% endif %}">
+          <input type="email" name="email" class="form-control" placeholder="{% if request.session.lang == 'en' %}your@email.com{% else %}بريدك@example.com{% endif %}" required>
         </div>
         <div class="mb-3">
           <label class="form-label">{% if request.session.lang == 'en' %}Subject{% else %}الموضوع{% endif %}</label>
-          <select class="form-select">
+          <select name="subject" class="form-select">
             <option>{% if request.session.lang == 'en' %}General Inquiry{% else %}استفسار عام{% endif %}</option>
             <option>{% if request.session.lang == 'en' %}List My Space{% else %}إضافة مساحة{% endif %}</option>
             <option>{% if request.session.lang == 'en' %}Booking Issue{% else %}مشكلة في الحجز{% endif %}</option>
@@ -44,7 +43,7 @@
         </div>
         <div class="mb-4">
           <label class="form-label">{% if request.session.lang == 'en' %}Message{% else %}الرسالة{% endif %}</label>
-          <textarea class="form-control" rows="5" placeholder="{% if request.session.lang == 'en' %}Write your message...{% else %}اكتب رسالتك...{% endif %}"></textarea>
+          <textarea name="message" class="form-control" rows="5" placeholder="{% if request.session.lang == 'en' %}Write your message...{% else %}اكتب رسالتك...{% endif %}" required></textarea>
         </div>
         <button type="submit" class="btn-gold w-100">
           {% if request.session.lang == 'en' %}Send Message{% else %}إرسال الرسالة{% endif %}
@@ -87,7 +86,6 @@
         </div>
       </div>
 
-      <!-- Social -->
       <div class="contact-social">
         <div class="contact-social-label">{% if request.session.lang == 'en' %}Follow Us{% else %}تابعنا{% endif %}</div>
         <div class="contact-social-links">
